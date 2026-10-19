@@ -1,0 +1,49 @@
+seed: 42
+output_dir: results/tabula_muris_facs
+device: auto
+
+dataset:
+  name: tabula_muris_facs
+  processed_dir: data/tabula_muris/facs_dissociation
+  n_samples: null
+  test_ratio: 0.0
+
+evaluation:
+  knn_k: 10
+  x_metric: trustworthiness
+  y_metric: score_dirichlet_energy
+
+methods:
+  - name: pca
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+  - name: tsne
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+  - name: umap
+    param_name: _dummy
+    values: [0]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+  - name: sumap
+    param_name: target_weight
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+  - name: akrmap
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_epochs: 20
+      batch_size: 1000
+  - name: isdr
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_iter: 750
+      warmup_steps: 50
+      knn_rebuild_interval: 50

@@ -1,0 +1,51 @@
+seed: 42
+output_dir: results/mnist_quick
+device: cpu
+
+dataset:
+  name: mnist
+  n_samples: 2000
+  test_ratio: 0.0
+  data_root: data
+
+evaluation:
+  knn_k: 10
+  x_metric: trustworthiness
+  y_metric: score_dirichlet_energy
+
+methods:
+  - name: pca
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+
+  - name: tsne
+    param_name: _dummy
+    values: [0]
+    base_params:
+      perplexity: 30
+      n_iter: 1000
+
+  - name: umap
+    param_name: _dummy
+    values: [0]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+
+  - name: sumap
+    param_name: target_weight
+    values: [0.0, 0.4, 0.8]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+      target_metric: categorical
+
+  - name: isdr
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.8]
+    base_params:
+      perplexity: 30
+      n_iter: 300
+      warmup_steps: 30
+      knn_rebuild_interval: 50

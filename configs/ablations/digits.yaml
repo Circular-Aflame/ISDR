@@ -1,0 +1,25 @@
+seed: 42
+output_dir: results/ablation_digits
+device: cpu
+dataset:
+  name: digits
+  n_samples: null
+  data_seed: 42
+  split_seed: 42
+  test_ratio: 0.0
+evaluation:
+  knn_k: 10
+methods:
+  - name: isdr
+    base_params:
+      perplexity: 30
+      pca_dim: 50
+      tsne_iter: 1000
+      n_iter: 750
+      lr: 100
+      warmup_steps: 50
+      early_exaggeration: 12
+      early_exaggeration_iters: 250
+      momentum_switch_iter: 250
+      regloss_k: 90
+      knn_rebuild_interval: 50

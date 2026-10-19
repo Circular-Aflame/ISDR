@@ -1,0 +1,84 @@
+seed: 42
+output_dir: results/mnist_pareto
+device: auto
+
+dataset:
+  name: mnist
+  n_samples: 10000
+  test_ratio: 0.0
+  data_root: data
+
+evaluation:
+  knn_k: 10
+  x_metric: trustworthiness
+  y_metric: score_dirichlet_energy
+
+methods:
+  - name: pca
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+  - name: tsne
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+  - name: umap
+    param_name: _dummy
+    values: [0]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+  - name: pacmap
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+  - name: sumap
+    param_name: target_weight
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_neighbors: 15
+      min_dist: 0.1
+      target_metric: categorical
+  - name: cebra
+    param_name: _dummy
+    values: [0]
+    base_params:
+      temperature: 1.0
+      max_iterations: 2000
+      batch_size: 512
+      learning_rate: 0.0003
+      pca_dim: 100
+  - name: rfphate
+    param_name: _dummy
+    values: [0]
+    base_params:
+      n_estimators: 500
+      n_landmark: 2000
+  - name: rfae
+    param_name: _dummy
+    values: [0]
+    base_params:
+      epochs: 50
+      batch_size: 256
+      lr: 0.001
+  - name: akrmap
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_epochs: 20
+      batch_size: 1000
+  - name: tpse
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_epochs: 40
+      batch_size: 512
+      pca_dim: 128
+      n_classes: 10
+  - name: isdr
+    param_name: alpha
+    values: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+    base_params:
+      n_iter: 750
+      warmup_steps: 50
+      knn_rebuild_interval: 50

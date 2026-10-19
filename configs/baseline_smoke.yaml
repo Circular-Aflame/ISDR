@@ -1,0 +1,113 @@
+seed: 42
+output_dir: results/baseline_smoke
+device: cpu
+dataset:
+  name: digits
+  n_samples: 400
+  data_seed: 42
+  split_seed: 42
+  test_ratio: 0
+evaluation:
+  knn_k: 10
+methods:
+- name: pca
+  param_name: _dummy
+  values:
+  - 0
+  base_params: {}
+- name: tsne
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    perplexity: 20
+    n_iter: 350
+    pca_dim: 0
+- name: umap
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    n_neighbors: 15
+    min_dist: 0.1
+    pca_dim: 0
+- name: pacmap
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    n_neighbors: 10
+    pca_dim: 0
+- name: sumap
+  param_name: target_weight
+  values:
+  - 0.4
+  base_params:
+    n_neighbors: 15
+    min_dist: 0.1
+    target_metric: l2
+    pca_dim: 0
+    n_jobs: 1
+- name: rfphate
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    prediction_type: regression
+    n_estimators: 20
+    n_landmark: 64
+    n_pca: 15
+- name: rfae
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    prediction_type: regression
+    epochs: 2
+    batch_size: 128
+    lr: 0.001
+    n_pca: 15
+    lam: 0.01
+    n_estimators: 20
+    n_landmark: 64
+- name: akrmap
+  param_name: alpha
+  values:
+  - 0.4
+  base_params:
+    n_epochs: 2
+    batch_size: 128
+    lr: 0.002
+    pca_dim: 0
+- name: tpse
+  param_name: alpha
+  values:
+  - 0.4
+  base_params:
+    n_epochs: 2
+    batch_size: 128
+    pca_dim: 0
+    n_classes: 10
+    hidden_dim: 64
+- name: isdr
+  param_name: alpha
+  values:
+  - 0.4
+  base_params:
+    perplexity: 20
+    tsne_iter: 350
+    n_iter: 30
+    warmup_steps: 5
+    knn_rebuild_interval: 50
+    regloss_k: 30
+    pca_dim: 0
+- name: cebra
+  param_name: _dummy
+  values:
+  - 0
+  base_params:
+    temperature: 1.0
+    max_iterations: 10
+    batch_size: 128
+    learning_rate: 0.0003
+    pca_dim: 0

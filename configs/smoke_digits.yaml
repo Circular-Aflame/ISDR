@@ -1,0 +1,38 @@
+seed: 42
+output_dir: results/smoke_digits
+device: cpu
+
+dataset:
+  name: digits
+  n_samples: 400
+  test_ratio: 0.0
+  data_root: data
+
+evaluation:
+  knn_k: 10
+  x_metric: trustworthiness
+  y_metric: score_dirichlet_energy
+
+methods:
+  - name: pca
+    param_name: _dummy
+    values: [0]
+    base_params: {}
+
+  - name: tsne
+    param_name: _dummy
+    values: [0]
+    base_params:
+      perplexity: 20
+      n_iter: 350
+
+  - name: isdr
+    param_name: alpha
+    values: [0.0, 0.4]
+    base_params:
+      perplexity: 20
+      tsne_iter: 350
+      n_iter: 20
+      warmup_steps: 5
+      knn_rebuild_interval: 10
+      regloss_k: 30

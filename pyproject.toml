@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isdr"
+version = "0.1.0"
+description = "Interpretable Supervised Dimensionality Reduction"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "licenses/*.txt"]
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.23",
+  "scipy>=1.10",
+  "scikit-learn>=1.2",
+  "matplotlib>=3.7",
+  "pyyaml>=6.0",
+  "torch>=2.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Circular-Aflame/ISDR"
+Issues = "https://github.com/Circular-Aflame/ISDR/issues"
+
+[project.optional-dependencies]
+public-data = ["torchvision>=0.15", "medmnist>=3.0", "pandas>=2.0", "pyarrow>=12"]
+accelerate = ["numba>=0.57"]
+dev = ["ruff>=0.11", "build>=1.2"]
+baselines = [
+  "umap-learn>=0.5",
+  "pacmap>=0.7",
+  "cebra>=0.4",
+  "scikit-learn>=1.5,<1.9",
+  "phate==2.0.0",
+  "graphtools==2.1.0",
+  "seaborn>=0.13",
+  "pandas>=2.0",
+  "setuptools>=77",
+]
+tabula = ["pandas>=2.0", "pyarrow>=12"]
+regression-data = ["pandas>=2.0", "openpyxl>=3.1", "xlrd>=2.0"]
+
+[project.scripts]
+isdr = "isdr.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["isdr*"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E9", "F"]
