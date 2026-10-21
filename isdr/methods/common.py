@@ -1,3 +1,5 @@
+"""Preprocessing, initialization, and neural-model helpers shared by adapters."""
+
 from __future__ import annotations
 
 import random

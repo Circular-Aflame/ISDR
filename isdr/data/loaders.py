@@ -1,6 +1,9 @@
+"""Public dataset loaders and fixed-seed splits with training-only scaling."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -11,6 +14,7 @@ from .regression import load_regression_cache
 
 @dataclass
 class DatasetBundle:
+    """Feature rows, scalar signals, and provenance before splitting or scaling."""
     X: np.ndarray
     scores: np.ndarray
     name: str
@@ -169,16 +173,17 @@ LOADERS = {
     "s_curve": load_s_curve,
     "mnist": load_mnist,
     "fashion_mnist": load_fashion_mnist,
-    "organcmnist": lambda **kw: load_medmnist("organcmnist", **kw),
-    "pathmnist": lambda **kw: load_medmnist("pathmnist", **kw),
+    "organcmnist": partial(load_medmnist, "organcmnist"),
+    "pathmnist": partial(load_medmnist, "pathmnist"),
     "tabula_muris_facs": load_tabula_muris_facs,
 }
 
 for _regression_key in REGRESSION_SPECS:
-    LOADERS[_regression_key] = (lambda key: lambda **kwargs: load_regression_benchmark(key, **kwargs))(_regression_key)
+    LOADERS[_regression_key] = partial(load_regression_benchmark, _regression_key)
 
 
 def load_dataset(config: dict, seed: int) -> DatasetBundle:
+    """Load fixed rows using ``data_seed``; ``seed`` is the method seed, kept separate."""
     name = str(config.get("name", "digits")).lower()
     if name not in LOADERS:
         available = ", ".join(sorted(LOADERS))
@@ -190,6 +195,7 @@ def load_dataset(config: dict, seed: int) -> DatasetBundle:
 
 
 def split_data(X: np.ndarray, scores: np.ndarray, test_ratio: float, seed: int) -> dict:
+    """Split rows reproducibly and standardize both splits with training statistics."""
     if X.ndim != 2 or len(X) != len(scores) or len(X) < 3:
         raise ValueError("Expected matching features and scalar scores for at least three samples")
     if not np.isfinite(X).all() or not np.isfinite(scores).all():

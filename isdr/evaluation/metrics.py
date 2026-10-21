@@ -1,3 +1,5 @@
+"""Neighborhood geometry, scalar-signal variation, and contraction diagnostics."""
+
 from __future__ import annotations
 
 import math
@@ -57,6 +59,7 @@ def knn_overlap(Z: np.ndarray, X_high: np.ndarray, k: int = 10) -> float:
 
 
 def score_dirichlet_energy(Z: np.ndarray, scores: np.ndarray, k: int = 10) -> float:
+    """Mean squared signal difference on directed layout kNN edges, before plot scaling."""
     scores = np.asarray(scores, dtype=np.float64).reshape(-1)
     denom = scores.max() - scores.min()
     if denom <= 1e-12:
@@ -71,19 +74,21 @@ def score_dirichlet_energy(Z: np.ndarray, scores: np.ndarray, k: int = 10) -> fl
 
 
 def local_regression_mae(Z: np.ndarray, scores: np.ndarray, k: int = 10) -> float:
+    scores = np.asarray(scores).reshape(-1)
     idx = _neighbors(Z, k)
     if idx.size == 0:
         return math.nan
-    pred = np.asarray(scores)[idx].mean(axis=1)
-    return float(np.mean(np.abs(np.asarray(scores).reshape(-1) - pred)))
+    pred = scores[idx].mean(axis=1)
+    return float(np.mean(np.abs(scores - pred)))
 
 
 def local_regression_rmse(Z: np.ndarray, scores: np.ndarray, k: int = 10) -> float:
+    scores = np.asarray(scores).reshape(-1)
     idx = _neighbors(Z, k)
     if idx.size == 0:
         return math.nan
-    pred = np.asarray(scores)[idx].mean(axis=1)
-    err = np.asarray(scores).reshape(-1) - pred
+    pred = scores[idx].mean(axis=1)
+    err = scores - pred
     return float(np.sqrt(np.mean(err * err)))
 
 
@@ -165,6 +170,20 @@ def compute_all_metrics(
     include_theory: bool = True,
     score_type: str = "continuous",
 ) -> dict:
+    """Evaluate one layout against matching feature rows and scalar signals.
+
+    Signals may be a vector or a single-column array. Returned DE is unscaled;
+    the plotting module multiplies it by 100 for display.
+    """
+    Z = np.asarray(Z)
+    X_high = np.asarray(X_high)
+    scores = np.asarray(scores)
+    if scores.ndim == 2 and scores.shape[1] == 1:
+        scores = scores[:, 0]
+    if X_high.ndim != 2 or X_high.shape[1] == 0 or scores.ndim != 1 or len(scores) != len(X_high):
+        raise ValueError("Expected feature rows and one scalar signal per sample")
+    if not np.isfinite(X_high).all() or not np.isfinite(scores).all():
+        raise ValueError("Features and signals must be finite")
     if Z.shape != (len(X_high), 2) or not np.isfinite(Z).all():
         raise ValueError("Expected a finite (n_samples, 2) embedding")
     if np.any(np.ptp(Z, axis=0) <= 1e-12):

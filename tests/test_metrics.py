@@ -45,6 +45,34 @@ class MetricTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 metrics.compute_all_metrics(Z, np.ones((12, 4)), np.arange(12))
 
+    def test_column_signals_match_vector_metrics(self):
+        rng = np.random.default_rng(12)
+        Z = rng.normal(size=(30, 2)).astype(np.float32)
+        X = rng.normal(size=(30, 5)).astype(np.float32)
+        scores = rng.normal(size=30).astype(np.float32)
+        vector = metrics.compute_all_metrics(Z, X, scores)
+        column = metrics.compute_all_metrics(Z, X, scores[:, None])
+        for name in vector:
+            np.testing.assert_equal(vector[name], column[name], err_msg=name)
+        self.assertEqual(
+            metrics.local_regression_mae(Z, scores), metrics.local_regression_mae(Z, scores[:, None])
+        )
+        self.assertEqual(
+            metrics.local_regression_rmse(Z, scores), metrics.local_regression_rmse(Z, scores[:, None])
+        )
+
+    def test_invalid_feature_or_signal_rows_fail(self):
+        Z = np.arange(24).reshape(12, 2)
+        X = np.ones((12, 4))
+        for features, scores in [
+            (X, np.arange(11)),
+            (X, np.full(12, np.nan)),
+            (X * np.inf, np.arange(12)),
+            (X, np.arange(12).reshape(3, 4)),
+        ]:
+            with self.subTest(shape=np.shape(scores)), self.assertRaises(ValueError):
+                metrics.compute_all_metrics(Z, features, scores)
+
 
 class GradientTests(unittest.TestCase):
     def test_student_t_gradient_by_finite_differences(self):

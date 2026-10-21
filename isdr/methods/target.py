@@ -1,3 +1,5 @@
+"""Target-driven baseline adapters, including the AKRMap and TP-SE adaptations."""
+
 from __future__ import annotations
 
 from math import log2

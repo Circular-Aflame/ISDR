@@ -1,3 +1,5 @@
+"""Unsupervised baseline adapters for the common benchmark interface."""
+
 from __future__ import annotations
 
 import numpy as np

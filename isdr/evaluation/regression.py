@@ -1,3 +1,5 @@
+"""Method grids and seed aggregation shared by regression and classification."""
+
 from __future__ import annotations
 
 import json

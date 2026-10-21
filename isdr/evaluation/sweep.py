@@ -1,3 +1,5 @@
+"""Configured sweeps with isolated workers, resumable outputs, and evaluation."""
+
 from __future__ import annotations
 
 import argparse
@@ -400,6 +402,7 @@ def _run_point_subprocess(
 
 
 def run_sweep(config_path: str | Path) -> dict:
+    """Run a YAML grid and save per-point results; relative paths use the current directory."""
     config_path, root, config = _load_config(config_path)
 
     seed = int(config.get("seed", 42))

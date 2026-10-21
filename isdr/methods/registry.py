@@ -1,3 +1,10 @@
+"""Benchmark method registry.
+
+Adapters receive standardized train/test rows, scalar signals, settings, an
+output directory, seed, and device. They return ``Z_train`` and optional
+``Z_test`` arrays; methods without an out-of-sample map return ``Z_test=None``.
+"""
+
 from __future__ import annotations
 
 from typing import Callable

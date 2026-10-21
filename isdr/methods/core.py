@@ -1,3 +1,5 @@
+"""ISDR's readout gradient, layout refinement, and benchmark adapter."""
+
 from __future__ import annotations
 
 import json
@@ -97,6 +99,7 @@ def _build_knn_graph(Y: np.ndarray, k: int, n_jobs: int = -1) -> np.ndarray:
 
 
 def student_t_regloss_and_grad(Y: np.ndarray, scores: np.ndarray, knn_indices: np.ndarray):
+    """Return the leave-one-out NW loss and its query-plus-neighbor gradient."""
     n_samples, dim = Y.shape
     Y = np.ascontiguousarray(Y.astype(np.float64, copy=False))
     scores = np.ascontiguousarray(scores.astype(np.float64, copy=False).reshape(-1))
@@ -319,6 +322,7 @@ def run_isdr_refinement(
 
 @register("isdr")
 def isdr_method(X_train, scores_train, X_test, scores_test, params, output_dir, seed, device="cpu"):
+    """Benchmark adapter; ``output_dir=None`` disables initializer/profile files."""
     set_seed(seed)
     p = dict(params or {})
     alpha = float(p.get("alpha", 0.5))
@@ -343,8 +347,12 @@ def isdr_method(X_train, scores_train, X_test, scores_test, params, output_dir, 
     t_init = time.perf_counter()
     Y_init = initial_layout(X_pca, seed, p)
     init_seconds = time.perf_counter() - t_init
-    np.save(Path(output_dir) / "Y_init.npy", Y_init)
-    profile_path = Path(output_dir) / "profile.json"
+    profile_path = None
+    if output_dir is not None:
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        np.save(output_dir / "Y_init.npy", Y_init)
+        profile_path = output_dir / "profile.json"
     Z_train = run_isdr_refinement(
         X_pca,
         scores_train,
@@ -358,11 +366,11 @@ def isdr_method(X_train, scores_train, X_test, scores_test, params, output_dir, 
         knn_rebuild_interval=rebuild,
         n_jobs=int(p.get("n_jobs", -1)),
         score_normalization=p.get("score_normalization", "zscore"),
-        profile_path=str(profile_path),
+        profile_path=str(profile_path) if profile_path is not None else None,
         verbose=False,
         **refinement_schedule,
     )
-    if profile_path.exists():
+    if profile_path is not None and profile_path.exists():
         profile = json.loads(profile_path.read_text())
         profile["init"] = p.get("init", "tsne")
         profile["tsne_init"] = p.get("tsne_init", "pca")

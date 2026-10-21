@@ -9,6 +9,30 @@
 
 Installation commands are in the [README](../README.md#benchmarks). The RF installer pins compatible RF-GAP, RF-PHATE, and RF-AE commits. The optional baseline extra requires scikit-learn `<1.9` for RF-GAP's forest API.
 
+## Python usage
+
+Use `from isdr import fit_transform` for a single layout. It takes a dense feature matrix with at least three samples and two features, plus a scalar signal for each row. It returns a float32 array of shape `(n_samples, 2)` in the original row order and writes no files. The function uses the same initializer and refinement code as the benchmark runner.
+
+Standardize features before calling it when their scales differ. Scores are normalized inside the regularizer, so pass the original scalar values. For example:
+
+```python
+from isdr import fit_transform
+
+Y = fit_transform(
+    X, signal,
+    alpha=0.4,
+    random_state=42,
+    pca_dim=50,
+    perplexity=30,
+    tsne_iter=1000,
+    n_iter=750,
+    regloss_k=90,
+    knn_rebuild_interval=50,
+)
+```
+
+The default `alpha` is `0.5`; configuration examples can override it. The keyword options use the same names as `base_params` in YAML. Unknown options raise `TypeError`. Initialization choices and refinement schedules are described below. The method is nonparametric: a later call builds a new layout, not a prediction in an existing map.
+
 ## Preprocessing
 
 Set `pca_dim: 0` to use standardized features directly. PCA is also skipped when the requested dimension is at least the input dimension. The image benchmarks use PCA-50 before t-SNE, ISDR, UMAP, PaCMAP, and S-UMAP.
